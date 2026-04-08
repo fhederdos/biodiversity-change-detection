@@ -1,10 +1,10 @@
 import { useMemo } from 'react';
 import { useParams } from 'react-router-dom';
-import { Circle, MapContainer, Marker, Popup, Polygon, TileLayer } from 'react-leaflet';
+import { Circle, MapContainer, Marker, Polygon, TileLayer, Tooltip } from 'react-leaflet';
 import L from 'leaflet';
 import AssessmentAccordion from '../components/AssessmentAccordion';
 import RiskBadge from '../components/RiskBadge';
-import { esrsQuestions, sites } from '../data/mockData';
+import { assessmentQuestions, sites } from '../data/mockData';
 
 const markerIcon = new L.Icon({
   iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
@@ -13,101 +13,113 @@ const markerIcon = new L.Icon({
   iconAnchor: [12, 41],
 });
 
-const summaryCards = [
-  ['Overall Biodiversity Risk', 'high'],
-  ['Habitat Sensitivity', 'high'],
-  ['Water Dependency', 'medium'],
-  ['Pollination Dependency', 'high'],
-  ['Recommended Land Use Model', 'low'],
+const categoryCards = [
+  'Habitat Sensitivity',
+  'Biodiversity Impacts',
+  'Dependencies',
+  'Risk & Resilience',
+  'Policies & Governance',
+  'Actions & Mitigation',
+  'Targets & Metrics',
 ];
 
 export default function SiteDetailPage() {
   const { siteId } = useParams();
   const site = useMemo(() => sites.find((entry) => entry.id === siteId) ?? sites[0], [siteId]);
 
-  const assessmentItems = esrsQuestions.map(([category, question, score, shortAnswer, detailedAnswer, implications, recommendedAction], index) => ({
-    id: `Q${index + 1}`,
-    category,
-    question,
-    score,
-    shortAnswer,
-    detailedAnswer,
-    implications,
-    recommendedAction,
-  }));
-
+  const mapPointer = [site.coordinates[0] + 0.108, site.coordinates[1]];
   const polygon = [
-    [48.3228, 14.281],
-    [48.3248, 14.286],
-    [48.3212, 14.289],
-    [48.3197, 14.284],
+    [mapPointer[0] - 0.008, mapPointer[1] - 0.008],
+    [mapPointer[0] - 0.008, mapPointer[1] + 0.008],
+    [mapPointer[0] + 0.008, mapPointer[1] + 0.008],
+    [mapPointer[0] + 0.008, mapPointer[1] - 0.008],
   ];
 
+  const countsByCategory = useMemo(() => assessmentQuestions.reduce((acc, item) => {
+    acc[item.category] = (acc[item.category] ?? 0) + 1;
+    return acc;
+  }, {}), []);
+
   return (
-    <main className="page-container">
-      <section className="card site-header">
+    <main className="page-container site-detail-page">
+      <section className="card site-header premium">
         <div>
-          <p className="eyebrow">Site Assessment</p>
+          <p className="eyebrow">Site URL: /site/apfelhain-nord</p>
           <h1>{site.name}</h1>
-          <p><strong>Planned activity:</strong> Landwirtschaftlicher Ausbau von Apfelbäumen (Monokultur)</p>
-          <p><strong>Region:</strong> Upper Austria</p>
-          <p><strong>Coordinates:</strong> 48.3220, 14.2840</p>
+          <p><strong>Region:</strong> {site.region}</p>
+          <p><strong>Planned activity:</strong> Expansion of apple farming as an intensive monoculture orchard</p>
+          <p><strong>Nearby context:</strong> seasonal stream approx. 180 m away, hedgerow network within 300–400 m, settlement edge within 500 m, remnant orchard-meadow elements in the wider landscape</p>
+          <p><strong>Coordinates (assessment unit):</strong> 48.4526, 14.5321</p>
+          <p><strong>Area:</strong> 12.4 ha</p>
         </div>
-        <div>
-          <RiskBadge level="high" />
-          <p className="exec-summary">
-            Executive Summary: The proposed apple monoculture expansion presents elevated biodiversity risk due to
-            habitat simplification, pollinator dependency exposure, and moderate water-pressure interactions. A
-            Streuobstwiese model is recommended for stronger ecological resilience.
-          </p>
+        <div className="header-right">
+          <div className="overall-risk">
+            <p>overallRisk</p>
+            <RiskBadge level="medium" />
+          </div>
+          <p><strong>currentPlan:</strong> Apple Monoculture</p>
+          <p><strong>recommendedAlternative:</strong> Streuobstwiese</p>
+          <p className="exec-summary"><strong>executiveSummary:</strong> The current monoculture plan has elevated biodiversity and ecosystem risk because it increases habitat uniformity, depends strongly on pollination and water, and reduces ecological resilience. A Streuobstwiese is the preferred option because it supports higher structural diversity, better pollinator habitat, and stronger long-term ecosystem performance.</p>
         </div>
       </section>
 
-      <section className="card">
-        <h2>Geospatial Context (OpenStreetMap)</h2>
+      <section className="recommendation-panel card">
+        <article>
+          <p className="eyebrow">Current plan</p>
+          <h3>Apple Monoculture</h3>
+          <RiskBadge level="medium" />
+        </article>
+        <article>
+          <p className="eyebrow">Biodiversity recommendation</p>
+          <h3>Streuobstwiese</h3>
+          <p>Alternative recommendation: Streuobstwiese with mixed local varieties, flowering meadow understory, hedgerow retention, lower chemical intensity</p>
+        </article>
+      </section>
+
+      <section className="card map-card">
         <div className="map-wrap">
-          <MapContainer center={site.coordinates} zoom={13} scrollWheelZoom={false}>
+          <MapContainer center={mapPointer} zoom={13} scrollWheelZoom={false}>
             <TileLayer
               attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
               url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             />
-            <Marker position={site.coordinates} icon={markerIcon}>
-              <Popup>Apfelhain Nord assessment point</Popup>
+            <Marker position={mapPointer} icon={markerIcon}>
+              <Tooltip permanent direction="top">Apfelhain Nord pointer (+12km north)</Tooltip>
             </Marker>
-            <Circle center={[48.322, 14.284]} radius={550} pathOptions={{ color: '#10b981' }} />
-            <Polygon positions={polygon} pathOptions={{ color: '#047857' }} />
+            <Circle center={mapPointer} radius={550} pathOptions={{ color: '#0284c7', fillColor: '#38bdf8', fillOpacity: 0.12 }} />
+            <Polygon positions={polygon} pathOptions={{ color: '#1d4ed8', fillOpacity: 0.08 }} />
+            <Marker position={[mapPointer[0] - 0.0014, mapPointer[1] - 0.0022]} icon={markerIcon}><Tooltip permanent>stream corridor</Tooltip></Marker>
+            <Marker position={[mapPointer[0] + 0.0026, mapPointer[1] - 0.001]} icon={markerIcon}><Tooltip permanent>hedgerow network</Tooltip></Marker>
+            <Marker position={[mapPointer[0] + 0.0012, mapPointer[1] + 0.003]} icon={markerIcon}><Tooltip permanent>settlement edge</Tooltip></Marker>
+            <Marker position={[mapPointer[0] - 0.0025, mapPointer[1] + 0.002]} icon={markerIcon}><Tooltip permanent>agricultural matrix</Tooltip></Marker>
           </MapContainer>
         </div>
         <div className="context-tags">
-          {['agricultural land', 'hedgerow', 'stream', 'settlement edge', 'protected habitat nearby'].map((label) => (
+          {['stream corridor', 'hedgerow network', 'settlement edge', 'agricultural matrix'].map((label) => (
             <span key={label} className="pill">{label}</span>
           ))}
         </div>
       </section>
 
       <section className="summary-grid">
-        {summaryCards.map(([title, level]) => (
-          <article key={title} className="card">
+        {categoryCards.map((title) => (
+          <article key={title} className="card category-card">
             <h3>{title}</h3>
-            {title === 'Recommended Land Use Model' ? (
-              <p className="recommendation">Streuobstwiese recommended over monoculture</p>
-            ) : (
-              <RiskBadge level={level} />
-            )}
+            <p>{countsByCategory[title] ?? 0} items</p>
           </article>
         ))}
       </section>
 
       <section className="card">
-        <h2>Risk Scoring Legend</h2>
+        <h2>SCORING LEGEND</h2>
         <div className="legend-row">
           {['high', 'medium', 'low', 'unanswered'].map((status) => <RiskBadge key={status} level={status} />)}
         </div>
       </section>
 
       <section className="card">
-        <h2>Accordion with ESRS E4 Analysis (30 Q/A)</h2>
-        <AssessmentAccordion items={assessmentItems} />
+        <h2>Assessment detail</h2>
+        <AssessmentAccordion items={assessmentQuestions} />
       </section>
     </main>
   );
