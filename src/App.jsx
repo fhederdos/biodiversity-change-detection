@@ -3,6 +3,7 @@ import LandingPage from './pages/LandingPage';
 import LoginPage from './pages/LoginPage';
 import DashboardPage from './pages/DashboardPage';
 import SiteDetailPage from './pages/SiteDetailPage';
+import AllAnalysesPage from './pages/AllAnalysesPage';
 import Header from './components/Header';
 
 function ProtectedRoute({ children }) {
@@ -37,6 +38,14 @@ export default function App() {
           element={
             <ProtectedRoute>
               <SiteDetailPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/analyses"
+          element={
+            <ProtectedRoute>
+              <AllAnalysesPage />
             </ProtectedRoute>
           }
         />
