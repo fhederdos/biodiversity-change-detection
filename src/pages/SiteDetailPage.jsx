@@ -41,7 +41,7 @@ export default function SiteDetailPage() {
   }, {}), []);
 
   return (
-    <main className="page-container site-detail-page">
+    <main className="page-container site-detail-page page-with-header">
       <section className="card site-header premium">
         <div>
           <p className="eyebrow">Site URL: /site/apfelhain-nord</p>
@@ -84,14 +84,12 @@ export default function SiteDetailPage() {
               url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             />
             <Marker position={mapPointer} icon={markerIcon}>
-              <Tooltip permanent direction="top">Apfelhain Nord pointer (+12km north)</Tooltip>
+              <Tooltip permanent direction="top"> {site.name}</Tooltip>
             </Marker>
             <Circle center={mapPointer} radius={550} pathOptions={{ color: '#0284c7', fillColor: '#38bdf8', fillOpacity: 0.12 }} />
             <Polygon positions={polygon} pathOptions={{ color: '#1d4ed8', fillOpacity: 0.08 }} />
             <Marker position={[mapPointer[0] - 0.0014, mapPointer[1] - 0.0022]} icon={markerIcon}><Tooltip permanent>stream corridor</Tooltip></Marker>
-            <Marker position={[mapPointer[0] + 0.0026, mapPointer[1] - 0.001]} icon={markerIcon}><Tooltip permanent>hedgerow network</Tooltip></Marker>
-            <Marker position={[mapPointer[0] + 0.0012, mapPointer[1] + 0.003]} icon={markerIcon}><Tooltip permanent>settlement edge</Tooltip></Marker>
-            <Marker position={[mapPointer[0] - 0.0025, mapPointer[1] + 0.002]} icon={markerIcon}><Tooltip permanent>agricultural matrix</Tooltip></Marker>
+            <Marker position={[mapPointer[0] - 0.0045, mapPointer[1] + 0.002]} icon={markerIcon}><Tooltip permanent>agricultural matrix</Tooltip></Marker>
           </MapContainer>
         </div>
         <div className="context-tags">
@@ -110,17 +108,19 @@ export default function SiteDetailPage() {
         ))}
       </section>
 
-      <section className="card">
-        <h2>SCORING LEGEND</h2>
-        <div className="legend-row">
-          {['high', 'medium', 'low', 'unanswered'].map((status) => <RiskBadge key={status} level={status} />)}
-        </div>
-      </section>
+      
+
+      
 
       <section className="card">
         <h2>Assessment detail</h2>
         <AssessmentAccordion items={assessmentQuestions} />
       </section>
+      <h5>SCORING LEGEND</h5>
+        <div className="legend-row">
+          
+          {['high', 'medium', 'low', 'unanswered'].map((status) => <RiskBadge key={status} level={status} />)}
+        </div>
     </main>
   );
 }

@@ -2,16 +2,17 @@ import { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 
 export default function LoginPage() {
-  const [username, setUsername] = useState('admin');
-  const [password, setPassword] = useState('password');
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const navigate = useNavigate();
   const location = useLocation();
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (username === 'admin' && password === 'password') {
+    if (password === 'Test1234!') {
       localStorage.setItem('bio-demo-auth', 'true');
+      localStorage.setItem('bio-demo-username', username || 'admin');
       navigate(location.state?.from || '/dashboard');
       return;
     }

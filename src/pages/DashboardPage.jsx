@@ -11,7 +11,7 @@ const kpis = [
 
 export default function DashboardPage() {
   return (
-    <main className="page-container">
+    <main className="page-container page-with-header">
       <section className="dashboard-head">
         <div>
           <p className="eyebrow">ESRS E4 Monitoring</p>
@@ -30,7 +30,7 @@ export default function DashboardPage() {
       </section>
 
       <section>
-        <h2>Analyzed Sites</h2>
+        <h2>Recently Analyzed</h2>
         <div className="site-grid">
           {sites.map((site) => (
             <article key={site.id} className="card site-card">

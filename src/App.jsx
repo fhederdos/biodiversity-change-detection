@@ -15,7 +15,8 @@ function ProtectedRoute({ children }) {
 }
 
 export default function App() {
-  const showHeader = !['/', '/login'].includes(window.location.pathname);
+  const location = useLocation();
+  const showHeader = !['/', '/login'].includes(location.pathname);
 
   return (
     <div className="app-shell">

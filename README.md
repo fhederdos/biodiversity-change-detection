@@ -2,9 +2,6 @@
 
 Frontend-only React prototype for ESRS E4 biodiversity checking workflows.
 
-## Demo credentials
-- username: `admin`
-- password: `password`
 
 ## Run locally
 ```bash
