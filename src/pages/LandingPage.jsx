@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import heroImage from '../data/images/pexels-photo-60132-pixel.jpg';
 
 const features = [
   {
@@ -18,7 +19,7 @@ const features = [
 export default function LandingPage() {
   return (
     <main>
-      <section className="hero">
+      <section className="hero" style={{ backgroundImage: `linear-gradient(rgba(15, 23, 42, 0.28), rgba(15, 23, 42, 0.28)), url(${heroImage})` }}>
         <div className="hero-overlay">
           <p className="eyebrow">Biodiversity Intelligence Platform</p>
           <h1>Geo Spatial Biodiversity Change Detection</h1>
